@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,5 +20,8 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
+// category (used for navbar)
 Route::get('asos/v1/categories/', [CategoryController::class, 'getCategories'])->name('category.get');
-Route::get('asos/v1/categories/sync', [CategoryController::class, 'syncCategory'])->name('category.sync');
+
+// products
+Route::get('asos/v1/products/', [ProductsController::class, 'getProducts'])->name('category.sync');
