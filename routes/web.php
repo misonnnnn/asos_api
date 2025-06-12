@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+
+Route::get('asos/v1/categories/', [CategoryController::class, 'getCategories'])->name('category.get');
+Route::get('asos/v1/categories/sync', [CategoryController::class, 'syncCategory'])->name('category.sync');
