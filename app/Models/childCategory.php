@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use App\Models\mainCategory;
 
 class childCategory extends Model
 {
@@ -27,6 +28,6 @@ class childCategory extends Model
 
     public function mainCategories()
     {
-        return $this->hasMany(MainCategory::class, 'child_category_id', 'external_unique_id');
+        return $this->hasMany(mainCategory::class, 'child_category_id', 'external_unique_id');
     }
 }
