@@ -24,4 +24,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('asos/v1/categories/', [CategoryController::class, 'getCategories'])->name('category.get');
 
 // products
-Route::get('asos/v1/products/', [ProductsController::class, 'getProducts'])->name('category.sync');
+Route::get('asos/v1/products/', [ProductsController::class, 'getProducts'])->name('products.get');

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\mainCategory;
+use App\Models\product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -11,50 +13,39 @@ class ProductsController extends Controller
 
     function getProducts(Request $request) {
         $categoryId = $request->input('categoryid');
+        $perPage = $request->input('per_page', 10); // default 10 per page
 
-        $params = [
-            "country"     => "US",
-            "store"       => "US",
-            "offset"      => 0,
-            "limit"       => 1000,
-            "categoryId"  => $categoryId,
-            "sizeSchema"  => "US",
-            "lang"        => "en-US",
+        $page = $request->input('page', 1);
+        $cacheKey = "products.all.{$categoryId}.page.{$page}.per_page.{$perPage}";
+        $ttl = now()->addHours(12); 
+        $isFromCache = true;
+
+        $products = Cache::remember($cacheKey, $ttl, function () use (&$isFromCache, $categoryId, $perPage) {
+            $isFromCache = false;
+            return product::where('category_id', $categoryId)->paginate($perPage);
+        });
+
+        $sizeInBytes = strlen(serialize($products));
+        $sizeInKilobytes = $sizeInBytes / 1024;
+        $size = "Cache size: {$sizeInBytes} bytes (~" . round($sizeInKilobytes, 2) . " KB)";
+
+        $response = [
+            'success' => true,
+            'size' => $size,
+            'isFromCache' => $isFromCache,
+            'data' => $products,
         ];
-        $build_params = http_build_query($params);
 
-        $apiKeys = Cache::get('api_keys', []);
+        if(!empty($categoryId)){
+            $categoryDetails = mainCategory::where('main_category_id', $categoryId)->first('name');
 
-        foreach ($apiKeys as $key => $isLimitReached) {
-            if ($isLimitReached) continue;
-
-            $response = Http::withHeaders([
-                'x-rapidapi-key' => $key,
-            ])->get("https://asos2.p.rapidapi.com/products/v2/list?{$build_params}");
-
-            $body = json_decode($response->body(), true);
-
-            if (isset($body['data']['message']) &&
-                str_contains($body['data']['message'], 'exceeded the MONTHLY quota')) {
-
-                // Mark key as used up
-                $apiKeys[$key] = true;
-                Cache::put('api_keys', $apiKeys);
-                continue;
-            }
-
-            return [
-                'success' => true,
-                'data' => $body,
-                'used_key' => $key
-            ];
+            $response['category_name'] = $categoryDetails->name;
+            $response['category_id'] = $categoryId;
         }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'All API keys have reached their monthly limit.'
-        ], 429);
+        return response()->json($response);
     }
+
 
 
     //other info might be helpful
