@@ -46,6 +46,26 @@ class ProductsController extends Controller
         return response()->json($response);
     }
 
+    function getProductDetails($path){
+        $product = product::where('url', $path)->first();
+        $success = true;
+
+        //extra info holds all the relevant details in need
+        $extra_info = !empty($product->extra_info) ? json_decode($product->extra_info, true) : []; 
+        if(empty($extra_info)){
+            $success = false;
+            $product = [];
+        }
+
+        $product = $extra_info;
+
+        return response()->json([
+            'success' => $success,
+            'full_path' => $path,
+            'data' => $product
+        ]);
+    }
+
 
 
     //other info might be helpful
