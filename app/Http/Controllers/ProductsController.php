@@ -66,6 +66,26 @@ class ProductsController extends Controller
         ]);
     }
 
+    public function getProductsBrands(){
+        $success = true;
+        $data = [];
+        $images = env('API_IMAGES_LIST', null);
+        if(!empty($images)){
+            $data = [];
+            $images = explode(',',$images);
+            $path = env('APP_URL').'/images/brands/';
+            foreach($images as $image){
+                $data[] = $path.$image;
+            }
+        }else{
+            $success = false;
+        }
+        return [
+            'success' => $success,
+            'data' => $data
+        ];
+    }
+
 
 
     //other info might be helpful

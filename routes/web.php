@@ -27,3 +27,5 @@ Route::get('asos/v1/categories/', [CategoryController::class, 'getCategories'])-
 Route::get('asos/v1/products/', [ProductsController::class, 'getProducts'])->name('products.get');
 Route::get('asos/v1/products/details/{path}', [ProductsController::class, 'getProductDetails'])->where('path', '.*') // allow slashes in {path}
     ->name('products.details.get');
+
+Route::get('asos/v1/product-brands-images', [ProductsController::class, 'getProductsBrands'])->name('products.brands.images.get');
