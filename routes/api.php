@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,5 +21,28 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+
+// category (used for navbar)
 Route::get('asos/v1/categories/', [CategoryController::class, 'getCategories'])->name('category.get');
-Route::get('asos/v1/categories/sync', [CategoryController::class, 'syncCategory'])->name('category.sync');
+
+// products
+Route::get('asos/v1/products/', [ProductsController::class, 'getProducts'])->name('products.get');
+Route::get('asos/v1/products/details/{path}', [ProductsController::class, 'getProductDetails'])->where('path', '.*') // allow slashes in {path}
+    ->name('products.details.get');
+
+Route::get('asos/v1/product-brands-images', [ProductsController::class, 'getProductsBrands'])->name('products.brands.images.get');
+
+
+
+
+//auth
+Route::post('asos/v1/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('asos/v1/me', [AuthController::class, 'me']);
+    Route::post('asos/v1/logout', [AuthController::class, 'logout']);
+    Route::post('asos/v1/refresh', [AuthController::class, 'refresh']);
+
+    // Protect your other routes here
+    // Route::get('/user-orders', [OrderController::class, 'index']);
+});
