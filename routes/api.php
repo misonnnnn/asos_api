@@ -37,6 +37,7 @@ Route::get('asos/v1/product-brands-images', [ProductsController::class, 'getProd
 
 //auth
 Route::post('asos/v1/login', [AuthController::class, 'login']);
+Route::post('asos/v1/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('asos/v1/me', [AuthController::class, 'me']);
